@@ -1,0 +1,22 @@
+(()=>{'use strict';
+const SUPPORT='966566257777', $=(s,p=document)=>p.querySelector(s);
+const toast=msg=>{let t=$('#toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.append(t)}t.textContent=msg;t.classList.add('show');clearTimeout(window.__jlToast);window.__jlToast=setTimeout(()=>t.classList.remove('show'),3200)};
+const settings=`<button class="jl-settings-trigger" id="jlSettingsOpen" aria-label="فتح الإعدادات" aria-controls="jlDrawer">⚙</button><div class="jl-overlay" id="jlOverlay"></div><aside class="jl-drawer" id="jlDrawer" aria-label="إعدادات الموقع" aria-hidden="true"><div class="jl-drawer-head"><div><h3>تفضيلاتك</h3><small>JEeb LI · EXPERIENCE</small></div><button class="jl-close" id="jlSettingsClose" aria-label="إغلاق">×</button></div>
+<div class="jl-setting"><div><b>الوضع الفاتح</b><small>تغيير مظهر الموقع</small></div><button class="jl-switch" id="jlTheme" role="switch" aria-checked="false"></button></div>
+<div class="jl-setting"><div><b>تقليل الحركة</b><small>حركة أخف وراحة أكبر</small></div><button class="jl-switch" id="jlMotion" role="switch" aria-checked="false"></button></div>
+<div class="jl-drawer-links"><a href="https://wa.me/${SUPPORT}" target="_blank" rel="noopener">الدعم والطلبات عبر واتساب ↗</a><a href="index.html#how">طريقة عمل الخدمة</a><a href="index.html#faq">الأسئلة الشائعة</a></div>
+<p class="drawer-note">نجهز رسالتك في واتساب لتراجعها بنفسك. لا يتم إرسال الطلب تلقائيًا.</p></aside>`;
+if(!$('#jlDrawer'))document.body.insertAdjacentHTML('beforeend',settings);
+const drawer=$('#jlDrawer'),overlay=$('#jlOverlay'),open=()=>{drawer.classList.add('open');overlay.classList.add('open');drawer.setAttribute('aria-hidden','false');$('#jlSettingsClose').focus()},close=()=>{drawer.classList.remove('open');overlay.classList.remove('open');drawer.setAttribute('aria-hidden','true');$('#jlSettingsOpen').focus()};
+$('#jlSettingsOpen').addEventListener('click',open);$('#jlSettingsClose').addEventListener('click',close);overlay.addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drawer.classList.contains('open'))close()});
+const theme=$('#jlTheme'),motion=$('#jlMotion'),setToggle=(el,on)=>el.setAttribute('aria-checked',String(on));
+const savedTheme=localStorage.getItem('jl-theme')==='light',savedMotion=localStorage.getItem('jl-motion')==='reduce';
+document.body.classList.toggle('jl-light',savedTheme);document.body.classList.toggle('jl-reduce',savedMotion);setToggle(theme,savedTheme);setToggle(motion,savedMotion);
+theme.onclick=()=>{const on=!document.body.classList.contains('jl-light');document.body.classList.toggle('jl-light',on);localStorage.setItem('jl-theme',on?'light':'dark');setToggle(theme,on)};
+motion.onclick=()=>{const on=!document.body.classList.contains('jl-reduce');document.body.classList.toggle('jl-reduce',on);localStorage.setItem('jl-motion',on?'reduce':'full');setToggle(motion,on)};
+const menu=$('#menuBtn'),nav=$('#navLinks');menu?.addEventListener('click',()=>{const is=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(is));menu.textContent=is?'×':'☰'});
+const reduce=()=>document.body.classList.contains('jl-reduce')||window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if('IntersectionObserver'in window&&!reduce()){const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el))}else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!reduce())document.querySelectorAll('.tilt').forEach(card=>{card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(900px) rotateY(${x*2.2}deg) rotateX(${-y*2.2}deg) translateY(-5px)`});card.addEventListener('mouseleave',()=>card.style.transform='')});
+window.JeebLI={support:SUPPORT,toast,send:message=>{const url=`https://wa.me/${SUPPORT}?text=${encodeURIComponent(message)}`;const w=window.open(url,'_blank','noopener,noreferrer');if(!w)location.href=url}};
+})();
